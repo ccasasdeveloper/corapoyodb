@@ -120,10 +120,19 @@ ALTER SEQUENCE public.place_id_seq OWNED BY public.place.id;
 CREATE TABLE public.post (
     id integer NOT NULL,
     post character varying(50),
-    date_added timestamp without time zone,
     place_id integer,
     product_id integer,
-    price double precision
+    price double precision,
+    date_added character varying,
+    cut_date_added character varying,
+    udm_id integer,
+    product_qualification_id integer,
+    udm_name character varying,
+    product_qualification_name character varying,
+    product_name character varying,
+    place_name character varying,
+    place_latitude character varying,
+    place_longitude character varying
 );
 
 
@@ -188,13 +197,49 @@ ALTER SEQUENCE public.product_id_seq OWNED BY public.product.id;
 
 
 --
+-- Name: product_qualification_offer; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.product_qualification_offer (
+    id integer NOT NULL,
+    name character varying(50) NOT NULL,
+    qualification integer
+);
+
+
+ALTER TABLE public.product_qualification_offer OWNER TO postgres;
+
+--
+-- Name: product_qualification_offer_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE public.product_qualification_offer_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.product_qualification_offer_id_seq OWNER TO postgres;
+
+--
+-- Name: product_qualification_offer_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE public.product_qualification_offer_id_seq OWNED BY public.product_qualification_offer.id;
+
+
+--
 -- Name: role; Type: TABLE; Schema: public; Owner: postgres
 --
 
 CREATE TABLE public.role (
     id integer NOT NULL,
     name character varying(50),
-    code character varying(50)
+    code character varying(50),
+    udm_name character varying
 );
 
 
@@ -294,6 +339,40 @@ ALTER SEQUENCE public.store_id_seq OWNED BY public.store.id;
 
 
 --
+-- Name: udm; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.udm (
+    id integer NOT NULL,
+    name character varying(50) NOT NULL
+);
+
+
+ALTER TABLE public.udm OWNER TO postgres;
+
+--
+-- Name: udm_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE public.udm_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.udm_id_seq OWNER TO postgres;
+
+--
+-- Name: udm_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE public.udm_id_seq OWNED BY public.udm.id;
+
+
+--
 -- Name: partner id; Type: DEFAULT; Schema: public; Owner: postgres
 --
 
@@ -322,6 +401,13 @@ ALTER TABLE ONLY public.product ALTER COLUMN id SET DEFAULT nextval('public.prod
 
 
 --
+-- Name: product_qualification_offer id; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.product_qualification_offer ALTER COLUMN id SET DEFAULT nextval('public.product_qualification_offer_id_seq'::regclass);
+
+
+--
 -- Name: role id; Type: DEFAULT; Schema: public; Owner: postgres
 --
 
@@ -343,6 +429,13 @@ ALTER TABLE ONLY public.store ALTER COLUMN id SET DEFAULT nextval('public.store_
 
 
 --
+-- Name: udm id; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.udm ALTER COLUMN id SET DEFAULT nextval('public.udm_id_seq'::regclass);
+
+
+--
 -- Data for Name: alembic_version; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
@@ -358,6 +451,8 @@ COPY public.alembic_version (version_num) FROM stdin;
 COPY public.partner (id, name, last_name, email, username, password, role_id, phone) FROM stdin;
 15	abcname	abclastname	kfjapiu@algo.com	partner1111		16	\N
 17	gasdfgsdf	vsggag	algoalgo.com	partner111111	dvbgbsdfg	16	3169999999
+18	lksgfnñ	gkñjhñsjh	djhañdfj@algo.com	djhañdfj@algo.com	123456	16	123456
+19	partner_ven	vendedor	partnervendedor@algo.com	partner_vendedor	123456	21	123456
 \.
 
 
@@ -372,6 +467,10 @@ COPY public.place (id, name, partner_id, product_id, product_two_id, product_thr
 18	test_one	17	11	11	11	4.67	-74.1	1	"{\\"ip\\": \\"186.102.4.77\\", \\"localityLanguageRequested\\": \\"en\\", \\"isReachableGlobally\\": true, \\"country\\": {\\"isoAlpha2\\": \\"CO\\", \\"isoAlpha3\\": \\"COL\\", \\"m49Code\\": 170, \\"name\\": \\"Colombia\\", \\"isoName\\": \\"Colombia\\", \\"isoNameFull\\": \\"the Republic of Colombia\\", \\"isoAdminLanguages\\": [{\\"isoAlpha3\\": \\"spa\\", \\"isoAlpha2\\": \\"es\\", \\"isoName\\": \\"Spanish; Castilian\\", \\"nativeName\\": \\"espa\\\\u00f1ol\\"}], \\"unRegion\\": \\"Latin America and the Caribbean/South America\\", \\"currency\\": {\\"numericCode\\": 170, \\"code\\": \\"COP\\", \\"name\\": \\"Colombian Peso\\", \\"minorUnits\\": 2}, \\"wbRegion\\": {\\"id\\": \\"LCN\\", \\"iso2Code\\": \\"ZJ\\", \\"value\\": \\"Latin America & Caribbean\\"}, \\"wbIncomeLevel\\": {\\"id\\": \\"UMC\\", \\"iso2Code\\": \\"XT\\", \\"value\\": \\"Upper middle income\\"}, \\"callingCode\\": \\"57\\", \\"countryFlagEmoji\\": \\"\\\\ud83c\\\\udde8\\\\ud83c\\\\uddf4\\", \\"wikidataId\\": \\"Q739\\", \\"geonameId\\": 3686110, \\"continents\\": [{\\"continent\\": \\"South America\\", \\"continentCode\\": \\"SA\\"}]}, \\"location\\": {\\"continent\\": \\"South America\\", \\"continentCode\\": \\"SA\\", \\"isoPrincipalSubdivision\\": \\"Bogota Capital District - Department\\", \\"isoPrincipalSubdivisionCode\\": \\"\\", \\"city\\": \\"Bogot\\\\u00e1\\", \\"localityName\\": \\"UPZ Jard\\\\u00edn Bot\\\\u00e1nico\\", \\"postcode\\": \\"111071\\", \\"latitude\\": 4.67, \\"longitude\\": -74.1, \\"plusCode\\": \\"67P7MWC2+22\\", \\"timeZone\\": {\\"ianaTimeId\\": \\"America/Bogota\\", \\"displayName\\": \\"(UTC-05:00) Colombia Standard Time\\", \\"effectiveTimeZoneFull\\": \\"Colombia Standard Time\\", \\"effectiveTimeZoneShort\\": \\"-05\\", \\"utcOffsetSeconds\\": -18000, \\"utcOffset\\": \\"-05\\", \\"isDaylightSavingTime\\": false, \\"localTime\\": \\"2021-12-30T15:26:46.0687901\\"}, \\"localityInfo\\": {\\"administrative\\": [{\\"order\\": 3, \\"adminLevel\\": 2, \\"name\\": \\"Colombia\\", \\"description\\": \\"country in South America\\", \\"isoName\\": \\"Colombia\\", \\"isoCode\\": \\"CO\\", \\"wikidataId\\": \\"Q739\\", \\"geonameId\\": 3686110}, {\\"order\\": 5, \\"adminLevel\\": 3, \\"name\\": \\"Andean Region\\", \\"description\\": \\"Mountainous region of central Colombia\\", \\"wikidataId\\": \\"Q130359\\"}, {\\"order\\": 6, \\"adminLevel\\": 4, \\"name\\": \\"Bogota Capital District - Department\\"}, {\\"order\\": 7, \\"adminLevel\\": 6, \\"name\\": \\"Bogot\\\\u00e1\\", \\"description\\": \\"capital city of Colombia\\", \\"isoName\\": \\"Distrito Capital de Bogot\\\\u00e1\\", \\"isoCode\\": \\"CO-DC\\", \\"wikidataId\\": \\"Q2841\\", \\"geonameId\\": 3688689}, {\\"order\\": 8, \\"adminLevel\\": 7, \\"name\\": \\"Bogot\\\\u00e1\\"}, {\\"order\\": 9, \\"adminLevel\\": 8, \\"name\\": \\"Engativ\\\\u00e1\\", \\"description\\": \\"locality of the Capital District of Bogot\\\\u00e1, Colombia\\", \\"wikidataId\\": \\"Q2647767\\", \\"geonameId\\": 7033268}, {\\"order\\": 11, \\"adminLevel\\": 9, \\"name\\": \\"UPZ Jard\\\\u00edn Bot\\\\u00e1nico\\"}], \\"informative\\": [{\\"order\\": 1, \\"name\\": \\"South America\\", \\"description\\": \\"continent, mainly on the Earth's southwestern quadrant\\", \\"isoCode\\": \\"SA\\", \\"wikidataId\\": \\"Q18\\", \\"geonameId\\": 6255150}, {\\"order\\": 2, \\"name\\": \\"Andes\\", \\"description\\": \\"mountain range running along the western side of South America\\", \\"wikidataId\\": \\"Q5456\\"}, {\\"order\\": 4, \\"name\\": \\"Cordillera Oriental\\", \\"description\\": \\"mountain range in the Peruvian Andes\\", \\"wikidataId\\": \\"Q4794486\\", \\"geonameId\\": 3933971}, {\\"order\\": 10, \\"name\\": \\"111071\\", \\"description\\": \\"postal code\\"}]}}, \\"lastUpdated\\": \\"2021-12-30T03:04:10.2216194Z\\", \\"network\\": {\\"registry\\": \\"LACNIC\\", \\"registryStatus\\": \\"assigned\\", \\"registeredCountry\\": \\"CO\\", \\"registeredCountryName\\": \\"Colombia\\", \\"organisation\\": \\"COLOMBIA TELECOMUNICACIONES S.A. ESP\\", \\"isReachableGlobally\\": true, \\"isBogon\\": false, \\"bgpPrefix\\": \\"186.102.0.0/20\\", \\"bgpPrefixNetworkAddress\\": \\"186.102.0.0\\", \\"bgpPrefixLastAddress\\": \\"186.102.15.255\\", \\"totalAddresses\\": 4096, \\"carriers\\": [{\\"asn\\": \\"AS3816\\", \\"asnNumeric\\": 3816, \\"organisation\\": \\"COLOMBIA TELECOMUNICACIONES S.A. ESP\\", \\"name\\": \\"\\", \\"registry\\": \\"LACNIC\\", \\"registeredCountry\\": \\"CO\\", \\"registeredCountryName\\": \\"Colombia\\", \\"registrationDate\\": \\"1994-09-09\\", \\"registrationLastChange\\": \\"2021-07-07\\", \\"totalIpv4Addresses\\": 2692352, \\"totalIpv4Prefixes\\": 1008, \\"totalIpv4BogonPrefixes\\": 0, \\"rank\\": 168, \\"rankText\\": \\"#168 out of 73,749\\"}], \\"viaCarriers\\": [{\\"asn\\": \\"AS12956\\", \\"asnNumeric\\": 12956, \\"organisation\\": \\"TELEFONICA GLOBAL SOLUTIONS SL\\", \\"name\\": \\"Telefonica\\", \\"registry\\": \\"RIPE\\", \\"registeredCountry\\": \\"ES\\", \\"registeredCountryName\\": \\"Spain\\", \\"totalIpv4Addresses\\": 166912, \\"rank\\": 1261, \\"rankText\\": \\"#1,261 out of 73,749\\"}]}, \\"confidence\\": \\"high\\", \\"confidenceArea\\": [{\\"latitude\\": 0.82, \\"longitude\\": -77.89143}, {\\"latitude\\": 0.83, \\"longitude\\": -77.89143}, {\\"latitude\\": 0.85434663, \\"longitude\\": -77.890236}, {\\"latitude\\": 4.004347, \\"longitude\\": -77.58024}, {\\"latitude\\": 4.009881, \\"longitude\\": -77.57963}, {\\"latitude\\": 8.469881, \\"longitude\\": -77.03963}, {\\"latitude\\": 8.522722, \\"longitude\\": -77.02727}, {\\"latitude\\": 8.571669, \\"longitude\\": -77.00373}, {\\"latitude\\": 10.561669, \\"longitude\\": -75.76373}, {\\"latitude\\": 10.610084, \\"longitude\\": -75.7244}, {\\"latitude\\": 11.060083, \\"longitude\\": -75.2544}, {\\"latitude\\": 11.063809, \\"longitude\\": -75.25043}, {\\"latitude\\": 11.173809, \\"longitude\\": -75.130424}, {\\"latitude\\": 11.203432, \\"longitude\\": -75.09093}, {\\"latitude\\": 11.224791, \\"longitude\\": -75.04636}, {\\"latitude\\": 11.504791, \\"longitude\\": -74.27636}, {\\"latitude\\": 11.513331, \\"longitude\\": -74.24769}, {\\"latitude\\": 11.963331, \\"longitude\\": -72.32768}, {\\"latitude\\": 11.969741, \\"longitude\\": -72.28145}, {\\"latitude\\": 11.967542, \\"longitude\\": -72.234825}, {\\"latitude\\": 11.95681, \\"longitude\\": -72.18941}, {\\"latitude\\": 11.937916, \\"longitude\\": -72.14677}, {\\"latitude\\": 11.91151, \\"longitude\\": -72.108376}, {\\"latitude\\": 11.878504, \\"longitude\\": -72.07556}, {\\"latitude\\": 11.8400345, \\"longitude\\": -72.049446}, {\\"latitude\\": 11.797427, \\"longitude\\": -72.03093}, {\\"latitude\\": 7.1574264, \\"longitude\\": -70.51093}, {\\"latitude\\": 7.11513, \\"longitude\\": -70.50106}, {\\"latitude\\": 7.0717735, \\"longitude\\": -70.4987}, {\\"latitude\\": 7.0286655, \\"longitude\\": -70.50393}, {\\"latitude\\": 3.7586653, \\"longitude\\": -71.19393}, {\\"latitude\\": 3.714558, \\"longitude\\": -71.20762}, {\\"latitude\\": 3.6737041, \\"longitude\\": -71.229225}, {\\"latitude\\": 1.8237041, \\"longitude\\": -72.439224}, {\\"latitude\\": 1.7862601, \\"longitude\\": -72.46921}, {\\"latitude\\": 1.755185, \\"longitude\\": -72.50583}, {\\"latitude\\": 1.7316179, \\"longitude\\": -72.54773}, {\\"latitude\\": 1.7164228, \\"longitude\\": -72.593376}, {\\"latitude\\": 0.57642275, \\"longitude\\": -77.553375}, {\\"latitude\\": 0.57, \\"longitude\\": -77.61}, {\\"latitude\\": 0.57, \\"longitude\\": -77.64}, {\\"latitude\\": 0.57, \\"longitude\\": -77.64}, {\\"latitude\\": 0.57480365, \\"longitude\\": -77.68905}, {\\"latitude\\": 0.5890301, \\"longitude\\": -77.73622}, {\\"latitude\\": 0.6121326, \\"longitude\\": -77.779686}, {\\"latitude\\": 0.6432233, \\"longitude\\": -77.81779}, {\\"latitude\\": 0.68110746, \\"longitude\\": -77.84906}, {\\"latitude\\": 0.7243291, \\"longitude\\": -77.87229}, {\\"latitude\\": 0.7712274, \\"longitude\\": -77.8866}, {\\"latitude\\": 0.82, \\"longitude\\": -77.89143}], \\"securityThreat\\": \\"unknown\\", \\"hazardReport\\": {\\"isKnownAsTorServer\\": false, \\"isKnownAsVpn\\": false, \\"isKnownAsProxy\\": false, \\"isSpamhausDrop\\": false, \\"isSpamhausEdrop\\": false, \\"isSpamhausAsnDrop\\": false, \\"isBlacklistedUceprotect\\": false, \\"isBlacklistedBlocklistDe\\": false, \\"isKnownAsMailServer\\": false, \\"isKnownAsPublicRouter\\": false, \\"isBogon\\": false, \\"isUnreachable\\": false, \\"hostingLikelihood\\": 0, \\"isHostingAsn\\": false, \\"isCellular\\": true}}"
 19	test_two	17	11	11	11	\N	\N	1	\N
 20	test_three	17	11	11	11	4.6137344	-74.1310464	1	\N
+21		17	11	11	11	4.603904	-74.1376	1	\N
+22	123445	18	11	11	11	4.603904	-74.1638144	1	\N
+23	puesto_test	15	11	11	11	4.571136	-74.1474304	1	\N
+24	puesto_ven1	19	11	11	11	4.571136	-74.1474304	1	\N
 \.
 
 
@@ -379,7 +478,24 @@ COPY public.place (id, name, partner_id, product_id, product_two_id, product_thr
 -- Data for Name: post; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
-COPY public.post (id, post, date_added, place_id, product_id, price) FROM stdin;
+COPY public.post (id, post, place_id, product_id, price, date_added, cut_date_added, udm_id, product_qualification_id, udm_name, product_qualification_name, product_name, place_name, place_latitude, place_longitude) FROM stdin;
+11	post one real time	22	11	30000	01/14/2022, 12:08:01	01/14/2022	2	3	\N	\N	\N	\N	\N	\N
+12	post two real time	22	11	56789	01/14/2022, 12:09:28	01/14/2022	3	4	\N	\N	\N	\N	\N	\N
+13	this is a post of d	22	11	45000	01/14/2022, 15:19:10	01/14/2022	1	1	Bulto	Extra	rqf	123445	4.603904	-74.1638144
+14	This is a post 2 of	22	11	34000	01/14/2022, 15:49:34	01/14/2022	1	1	Bulto	Extra	rqf	123445	4.603904	-74.1638144
+15	Oferta	22	11	60000	01/14/2022, 15:54:11	01/14/2022	5	2	Canastilla	Fino	rqf	123445	4.603904	-74.1638144
+16	ñjfhdañjfk	13	11	120000	01/24/2022, 12:24:04	01/24/2022	1	1	Bulto	Extra	rqf	hgzd	4.67	-74.12
+17	ñjfhdañjfk	13	11	120000	01/24/2022, 12:24:53	01/24/2022	1	1	Bulto	Extra	rqf	hgzd	4.67	-74.12
+18	this is a post of d	13	11	120000	01/24/2022, 12:29:19	01/24/2022	1	1	Bulto	Extra	rqf	hgzd	4.67	-74.12
+19	fgj{sklf	22	11	20000	01/24/2022, 12:42:10	01/24/2022	1	1	Bulto	Extra	rqf	123445	4.603904	-74.1638144
+20	this is a post of d	22	11	30000	01/25/2022, 15:14:44	01/25/2022	1	1	Bulto	Extra	rqf	123445	4.603904	-74.1638144
+21	post_three	24	11	10000	01/25/2022, 18:10:20	01/25/2022	1	1	Bulto	Extra	rqf	puesto_ven1	4.571136	-74.1474304
+22	test_post_26_01	24	11	20000	01/26/2022, 05:56:10	01/26/2022	1	1	Bulto	Extra	rqf	puesto_ven1	4.571136	-74.1474304
+23	post_three	24	11	10000	01/26/2022, 06:00:11	01/26/2022	1	1	Bulto	Extra	rqf	puesto_ven1	4.571136	-74.1474304
+24	post_three	24	11	10000	01/26/2022, 06:02:04	01/26/2022	1	1	Bulto	Extra	rqf	puesto_ven1	4.571136	-74.1474304
+25	post_three	24	11	10000	01/26/2022, 06:02:57	01/26/2022	1	1	Bulto	Extra	rqf	puesto_ven1	4.571136	-74.1474304
+26	post_three	24	11	10000	01/26/2022, 06:04:46	01/26/2022	1	1	Bulto	Extra	rqf	puesto_ven1	4.571136	-74.1474304
+27	post_three	24	11	10000	01/26/2022, 06:05:57	01/26/2022	1	1	Bulto	Extra	rqf	puesto_ven1	4.571136	-74.1474304
 \.
 
 
@@ -393,12 +509,34 @@ COPY public.product (id, name, code, price) FROM stdin;
 
 
 --
+-- Data for Name: product_qualification_offer; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY public.product_qualification_offer (id, name, qualification) FROM stdin;
+1	Extra	\N
+2	Fino	\N
+3	Cero	\N
+4	Regular	\N
+5	Primera	\N
+6	Segunda	\N
+7	Tercera	\N
+8	Parejo	\N
+9	Grueso	\N
+\.
+
+
+--
 -- Data for Name: role; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
-COPY public.role (id, name, code) FROM stdin;
-16	awetata	efatrar
-17	wgrrdfgs	rt3rwer
+COPY public.role (id, name, code, udm_name) FROM stdin;
+16	awetata	efatrar	\N
+17	wgrrdfgs	rt3rwer	\N
+18	tesrr	gfkjshlfdjh	\N
+20	Administrador	ADMIN	\N
+21	Vendedor	VEN	\N
+22	Comprador	COMP	\N
+19	Superadministrador	SUPERADMIN	\N
 \.
 
 
@@ -424,24 +562,39 @@ COPY public.store (id, number, code, square_id) FROM stdin;
 
 
 --
+-- Data for Name: udm; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY public.udm (id, name) FROM stdin;
+1	Bulto
+2	Kilo
+3	Rueda
+4	Caja
+5	Canastilla
+6	Arroba
+7	Pony
+\.
+
+
+--
 -- Name: partner_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.partner_id_seq', 17, true);
+SELECT pg_catalog.setval('public.partner_id_seq', 19, true);
 
 
 --
 -- Name: place_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.place_id_seq', 20, true);
+SELECT pg_catalog.setval('public.place_id_seq', 24, true);
 
 
 --
 -- Name: post_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.post_id_seq', 1, false);
+SELECT pg_catalog.setval('public.post_id_seq', 27, true);
 
 
 --
@@ -452,10 +605,17 @@ SELECT pg_catalog.setval('public.product_id_seq', 11, true);
 
 
 --
+-- Name: product_qualification_offer_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('public.product_qualification_offer_id_seq', 9, true);
+
+
+--
 -- Name: role_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.role_id_seq', 17, true);
+SELECT pg_catalog.setval('public.role_id_seq', 22, true);
 
 
 --
@@ -470,6 +630,13 @@ SELECT pg_catalog.setval('public.square_id_seq', 9, true);
 --
 
 SELECT pg_catalog.setval('public.store_id_seq', 2, true);
+
+
+--
+-- Name: udm_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('public.udm_id_seq', 7, true);
 
 
 --
@@ -529,6 +696,22 @@ ALTER TABLE ONLY public.product
 
 
 --
+-- Name: product_qualification_offer product_qualification_offer_name_key; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.product_qualification_offer
+    ADD CONSTRAINT product_qualification_offer_name_key UNIQUE (name);
+
+
+--
+-- Name: product_qualification_offer product_qualification_offer_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.product_qualification_offer
+    ADD CONSTRAINT product_qualification_offer_pkey PRIMARY KEY (id);
+
+
+--
 -- Name: role role_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -550,6 +733,22 @@ ALTER TABLE ONLY public.square
 
 ALTER TABLE ONLY public.store
     ADD CONSTRAINT store_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: udm udm_name_key; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.udm
+    ADD CONSTRAINT udm_name_key UNIQUE (name);
+
+
+--
+-- Name: udm udm_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.udm
+    ADD CONSTRAINT udm_pkey PRIMARY KEY (id);
 
 
 --
@@ -622,6 +821,22 @@ ALTER TABLE ONLY public.post
 
 ALTER TABLE ONLY public.post
     ADD CONSTRAINT post_product_id_fkey FOREIGN KEY (product_id) REFERENCES public.product(id);
+
+
+--
+-- Name: post post_product_qualification_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.post
+    ADD CONSTRAINT post_product_qualification_id_fkey FOREIGN KEY (product_qualification_id) REFERENCES public.product_qualification_offer(id);
+
+
+--
+-- Name: post post_udm_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.post
+    ADD CONSTRAINT post_udm_id_fkey FOREIGN KEY (udm_id) REFERENCES public.udm(id);
 
 
 --
